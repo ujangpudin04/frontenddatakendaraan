@@ -3,13 +3,34 @@ import { FcFolder } from "react-icons/fc";
 import { Form, Button } from "react-bootstrap";
 import { useState } from "react";
 import { useMutation } from "react-query";
+
 // import { useQuery } from "react-query";
 import { API } from "../../config/api";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
+// year
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 function Create() {
   const Navigate = useNavigate();
+
+  // getYear
+  const [startDate, setStartDate] = useState(null);
+
+  // handle dropdown
+  const getInitialState = () => {
+    const value = "";
+    return value;
+  };
+
+  const [value, setValue] = useState(getInitialState);
+
+  const handleColor = (e) => {
+    setValue(e.target.value);
+  };
+
   const [form, setForm] = useState({
     nomorregkendaraan: "",
     namapemilik: "",
@@ -21,6 +42,9 @@ function Create() {
     bahanbakar: "",
   });
 
+  // console.log(form);
+  // console.log(value);
+
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -31,6 +55,8 @@ function Create() {
   const handleSubmit = useMutation(async (e) => {
     try {
       e.preventDefault();
+      form.warna = value;
+      form.tahunpembuatan = startDate?.getFullYear();
       await API.post("/vehicles", form);
       Navigate("/");
     } catch (e) {
@@ -70,6 +96,7 @@ function Create() {
                   onChange={handleChange}
                   type="text"
                   placeholder="Input Cari No.Registrasi Kendaraan"
+                  required
                   // value={nomorregkendaraan}
                 />
               </Form.Group>
@@ -80,6 +107,7 @@ function Create() {
                   placeholder="Input Nama Pemilik"
                   name="namapemilik"
                   onChange={handleChange}
+                  required
                   // value={namapemilik}
                 />
               </Form.Group>
@@ -90,6 +118,7 @@ function Create() {
                   placeholder="Input Merk Kendaraan"
                   name="merkkendaraan"
                   onChange={handleChange}
+                  required
                   // value={merkkendaraan}
                 />
               </Form.Group>
@@ -104,6 +133,7 @@ function Create() {
                   type="text"
                   name="alamat"
                   onChange={handleChange}
+                  required
                   // value={alamat}
                 />
               </Form.Group>
@@ -111,33 +141,63 @@ function Create() {
             <div className="col-md-3">
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Tahun Pembuatan</Form.Label>
-                <Form.Control
-                  type="text"
+
+                <DatePicker
+                  className="form-control"
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  showYearPicker
+                  dateFormat="yyyy"
+                  value={startDate}
+                  placeholderText="Select Year"
+                  required
+                />
+
+                {/* <Form.Control
+                  type="year"
                   placeholder="Tahun Pembuatan"
                   name="tahunpembuatan"
                   onChange={handleChange}
                   // value={tahunpembuatan}
-                />
+                /> */}
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Kapasitas Silinder</Form.Label>
                 <Form.Control
-                  type="text"
+                  type="number"
                   placeholder="Kapasitas Silinder"
                   name="kapasitassilinder"
                   onChange={handleChange}
+                  required
                   // value={kapasitassilinder}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Warna</Form.Label>
-                <Form.Control
+
+                <div>
+                  <select
+                    value={value}
+                    onChange={handleColor}
+                    class="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option value="" selected disabled>
+                      Choose One
+                    </option>
+                    <option value="Merah">Merah</option>
+                    <option value="Hitam">Hitam</option>
+                    <option value="Biru">Biru</option>
+                    <option value="Abu-abu">Abu-abu</option>
+                  </select>
+                </div>
+                {/* <Form.Control
                   type="text"
                   placeholder="Warna"
                   name="warna"
                   onChange={handleChange}
                   // value={warna}
-                />
+                /> */}
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Bahan Bakar</Form.Label>
@@ -146,6 +206,7 @@ function Create() {
                   placeholder="Bahan Bakar"
                   name="bahanbakar"
                   onChange={handleChange}
+                  required
                   // value={bahanbakar}
                 />
               </Form.Group>
@@ -191,5 +252,7 @@ function Create() {
     </div>
   );
 }
+
+//handling year
 
 export default Create;

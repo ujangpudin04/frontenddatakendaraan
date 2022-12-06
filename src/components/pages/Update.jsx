@@ -1,29 +1,101 @@
 import React from "react";
 import { FcFolder } from "react-icons/fc";
 import { Form, Button } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { API } from "../../config/api";
 import { useState, useEffect } from "react";
+import { useMutation } from "react-query";
+import { Link } from "react-router-dom";
+// import axios from "axios";
+
+// year
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function Update() {
-  const [update, setUpdate] = useState();
+  // handle dropdown warna
+  const getInitialState = () => {
+    const value = "";
+    return value;
+  };
+  const [value, setValue] = useState(getInitialState);
+
+  const handleColor = (e) => {
+    setValue(e.target.value);
+  };
+
+  // getYear
+  const [startDate, setStartDate] = useState(null);
 
   let { id } = useParams();
 
-  // let { data: vehicles } = useQuery("vehiclesData", async () => {
-  //   const response = await API.get("/vehicles/" + id);
-  //   return response.data;
-  // });
+  let Navigate = useNavigate();
 
   const getUpdate = async () => {
     try {
       const response = await API.get("/vehicles/" + id);
-      console.log(response?.data);
-      return setUpdate(response.data);
+      // console.log(response?.data);
+      return setForm(response?.data);
     } catch (e) {
       return e.messages;
     }
   };
+
+  const [form, setForm] = useState({
+    id,
+    nomorregkendaraan: "",
+    namapemilik: "",
+    alamat: "",
+    merkkendaraan: "",
+    tahunpembuatan: "",
+    kapasitassilinder: "",
+    warna: "",
+    bahanbakar: "",
+  });
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  console.log(form);
+
+  const handleSubmit = useMutation(async (e) => {
+    try {
+      e.preventDefault();
+      form.warna = value;
+      form.tahunpembuatan = startDate?.getFullYear();
+      await API.post("/vehicles", form);
+      Navigate("/");
+    } catch (e) {
+      console.error(e);
+    }
+
+    // try {
+    //   e.preventDefault();
+    //   const config = {
+    //     headers: {
+    //       // "Content-type": "multipart/form-data",
+    //       "Content-type": "application/json;",
+
+    //       "Access-Control-Allow-Origin": "*",
+    //       "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+    //     },
+    //   };
+
+    //   // const body = JSON.parse(form);
+    //   const body = JSON.stringify(form);
+    //   setForm(body);
+
+    //   // await axios.put(`http://localhost:8080/user/${id}`, user);
+    //   await axios.put(`http://localhost:8081/api/v1/vehicles`, body, config);
+    //   Navigate("/");
+    // } catch (e) {
+    //   console.error(e);
+    // }
+  });
 
   useEffect(() => {
     getUpdate();
@@ -47,7 +119,10 @@ function Update() {
           }}
         >
           <h5 className="mb-3">Edit Data Kendaraan</h5>
-          <Form className="d-flex gap-5">
+          <Form
+            className="d-flex gap-5"
+            onSubmit={(e) => handleSubmit.mutate(e)}
+          >
             <div className="col-md-3">
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">
@@ -56,7 +131,10 @@ function Update() {
                 <Form.Control
                   type="text"
                   placeholder="Input Cari No.Registrasi Kendaraan"
-                  value={update.nomorregkendaraan}
+                  value={form.nomorregkendaraan}
+                  name="nomorregkendaraan"
+                  onChange={handleChange}
+                  required
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -64,7 +142,10 @@ function Update() {
                 <Form.Control
                   type="text"
                   placeholder="Input Nama Pemilik"
-                  value={update.namapemilik}
+                  value={form.namapemilik}
+                  name="namapemilik"
+                  onChange={handleChange}
+                  required
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -72,7 +153,10 @@ function Update() {
                 <Form.Control
                   type="text"
                   placeholder="Input Merk Kendaraan"
-                  value={update.merkkendaraan}
+                  value={form.merkkendaraan}
+                  name="merkkendaraan"
+                  onChange={handleChange}
+                  required
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -83,41 +167,82 @@ function Update() {
                   as="textarea"
                   rows={3}
                   placeholder="Input Alamat Pemilik Kendaraan"
-                  value={update.alamat}
+                  value={form.alamat}
+                  name="alamat"
+                  onChange={handleChange}
+                  required
                 />
               </Form.Group>
             </div>
             <div className="col-md-3">
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Tahun Pembuatan</Form.Label>
-                <Form.Control
+                <DatePicker
+                  className="form-control"
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  showYearPicker
+                  dateFormat="yyyy"
+                  value={startDate}
+                  placeholderText={form?.tahunpembuatan}
+                  required
+                />
+
+                {/* <Form.Control
                   type="text"
                   placeholder="Tahun Pembuatan"
-                  value={update.tahunpembuatan}
-                />
+                  value={form.tahunpembuatan}
+                  name="tahunpembuatan"
+                  onChange={handleChange}
+                /> */}
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Kapasitas Silinder</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Kapasitas Silinder"
-                  value={update.kapasitassilinder}
+                  value={form.kapasitassilinder}
+                  name="kapasitassilinder"
+                  onChange={handleChange}
+                  required
                 />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Warna</Form.Label>
-                <Form.Control
+                <div>
+                  <select
+                    value={value}
+                    onChange={handleColor}
+                    class="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option value={form?.warna} selected disabled>
+                      Choose One
+                    </option>
+                    <option value="Merah">Merah</option>
+                    <option value="Hitam">Hitam</option>
+                    <option value="Biru">Biru</option>
+                    <option value="Abu-abu">Abu-abu</option>
+                  </select>
+                </div>
+
+                {/* <Form.Control
                   type="text"
                   placeholder="Warna"
-                  value={update.warna}
-                />
+                  value={form.warna}
+                  name="warna"
+                  onChange={handleChange}
+                /> */}
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Bahan Bakar</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Bahan Bakar"
-                  value={update.bahanbakar}
+                  value={form.bahanbakar}
+                  name="bahanbakar"
+                  onChange={handleChange}
+                  required
                 />
               </Form.Group>
             </div>
@@ -132,20 +257,25 @@ function Update() {
             variant="primary"
             className="me-3"
             style={{ padding: ".5rem", width: "8rem", textAlign: "center" }}
+            type="submit"
+            onClick={(e) => handleSubmit.mutate(e)}
           >
             Simpan
           </Button>
-          <Button
-            variant="secondary"
-            className="mx-1"
-            style={{
-              padding: ".5rem",
-              width: "8rem",
-              textAlign: "center",
-            }}
-          >
-            Kembali
-          </Button>
+
+          <Link to={"/"} style={{ textDecoration: "none", color: "white" }}>
+            <Button
+              variant="secondary"
+              className="mx-1"
+              style={{
+                padding: ".5rem",
+                width: "8rem",
+                textAlign: "center",
+              }}
+            >
+              Kembali
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

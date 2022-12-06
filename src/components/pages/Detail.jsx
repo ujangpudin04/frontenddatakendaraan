@@ -57,23 +57,19 @@ function Detail() {
                 <Form.Control
                   disabled
                   type="text"
-                  placeholder={data?.nomorregkendaraan}
+                  value={data?.nomorregkendaraan}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Nama Pemilik</Form.Label>
-                <Form.Control
-                  disabled
-                  type="text"
-                  placeholder={data?.namapemilik}
-                />
+                <Form.Control disabled type="text" value={data?.namapemilik} />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold"> Merk Kendaraan</Form.Label>
                 <Form.Control
                   disabled
                   type="text"
-                  placeholder={data?.merkkendaraan}
+                  value={data?.merkkendaraan}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -85,7 +81,7 @@ function Detail() {
                   disabled
                   as="textarea"
                   rows={3}
-                  placeholder={data?.alamat}
+                  value={data?.alamat}
                 />
               </Form.Group>
             </div>
@@ -95,7 +91,7 @@ function Detail() {
                 <Form.Control
                   disabled
                   type="text"
-                  placeholder={data?.tahunpembuatan}
+                  value={data?.tahunpembuatan}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -103,20 +99,16 @@ function Detail() {
                 <Form.Control
                   disabled
                   type="text"
-                  placeholder={data?.kapasitassilinder}
+                  value={data?.kapasitassilinder}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Warna</Form.Label>
-                <Form.Control disabled type="text" placeholder={data?.warna} />
+                <Form.Control disabled type="text" value={data?.warna} />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Bahan Bakar</Form.Label>
-                <Form.Control
-                  disabled
-                  type="text"
-                  placeholder={data?.bahanbakar}
-                />
+                <Form.Control disabled type="text" value={data?.bahanbakar} />
               </Form.Group>
             </div>
           </Form>
@@ -126,19 +118,19 @@ function Detail() {
       {/* Button */}
       <div className="row mb-3">
         <div className="col d-flex justify-content-start">
-          <Button
-            variant="secondary"
-            className="mx-1"
-            style={{
-              padding: ".5rem",
-              width: "8rem",
-              textAlign: "center",
-            }}
-          >
-            <Link to={"/"} style={{ textDecoration: "none", color: "white" }}>
+          <Link to={"/"} style={{ textDecoration: "none", color: "white" }}>
+            <Button
+              variant="secondary"
+              className="mx-1"
+              style={{
+                padding: ".5rem",
+                width: "8rem",
+                textAlign: "center",
+              }}
+            >
               Kembali
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
