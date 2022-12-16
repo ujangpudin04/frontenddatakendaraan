@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { API } from "../../config/api";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { keyboard } from "@testing-library/user-event/dist/keyboard";
 
 function Detail() {
   const [data, setData] = useState();
@@ -55,6 +56,11 @@ function Detail() {
                   No.Registrasi Kendaraan
                 </Form.Label>
                 <Form.Control
+                  style={{
+                    cursor: "not-allowed",
+                    background: "grey",
+                    color: "white",
+                  }}
                   disabled
                   type="text"
                   value={data?.nomorregkendaraan}
@@ -62,11 +68,25 @@ function Detail() {
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Nama Pemilik</Form.Label>
-                <Form.Control disabled type="text" value={data?.namapemilik} />
+                <Form.Control
+                  style={{
+                    cursor: "not-allowed",
+                    background: "grey",
+                    color: "white",
+                  }}
+                  disabled
+                  type="text"
+                  value={data?.namapemilik}
+                />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold"> Merk Kendaraan</Form.Label>
                 <Form.Control
+                  style={{
+                    cursor: "not-allowed",
+                    background: "grey",
+                    color: "white",
+                  }}
                   disabled
                   type="text"
                   value={data?.merkkendaraan}
@@ -78,6 +98,11 @@ function Detail() {
                   Alamat Pemilik Kendaraan
                 </Form.Label>
                 <Form.Control
+                  style={{
+                    cursor: "not-allowed",
+                    background: "grey",
+                    color: "white",
+                  }}
                   disabled
                   as="textarea"
                   rows={3}
@@ -89,6 +114,11 @@ function Detail() {
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Tahun Pembuatan</Form.Label>
                 <Form.Control
+                  style={{
+                    cursor: "not-allowed",
+                    background: "grey",
+                    color: "white",
+                  }}
                   disabled
                   type="text"
                   value={data?.tahunpembuatan}
@@ -97,6 +127,11 @@ function Detail() {
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Kapasitas Silinder</Form.Label>
                 <Form.Control
+                  style={{
+                    cursor: "not-allowed",
+                    background: "grey",
+                    color: "white",
+                  }}
                   disabled
                   type="text"
                   value={data?.kapasitassilinder}
@@ -104,11 +139,29 @@ function Detail() {
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Warna</Form.Label>
-                <Form.Control disabled type="text" value={data?.warna} />
+                <Form.Control
+                  style={{
+                    cursor: "not-allowed",
+                    background: "grey",
+                    color: "white",
+                  }}
+                  disabled
+                  type="text"
+                  value={data?.warna}
+                />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Bahan Bakar</Form.Label>
-                <Form.Control disabled type="text" value={data?.bahanbakar} />
+                <Form.Control
+                  style={{
+                    cursor: "not-allowed",
+                    background: "grey",
+                    color: "white",
+                  }}
+                  disabled
+                  type="text"
+                  value={data?.bahanbakar}
+                />
               </Form.Group>
             </div>
           </Form>

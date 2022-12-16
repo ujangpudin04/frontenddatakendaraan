@@ -8,6 +8,9 @@ import { useMutation } from "react-query";
 import { Link } from "react-router-dom";
 // import axios from "axios";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // year
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -19,6 +22,7 @@ function Update() {
     return value;
   };
   const [value, setValue] = useState(getInitialState);
+  const [message, setMessage] = useState("");
 
   const handleColor = (e) => {
     setValue(e.target.value);
@@ -60,17 +64,37 @@ function Update() {
     });
   };
 
-  console.log(form);
+  // console.log(form);
+
+  const notify = () => {
+    if (form.namapemilik === "" || null) {
+      toast.error("Nama Pemilik Tidak Boleh Kosong", {
+        position: toast.POSITION.TOP_RIGHT,
+        theme: "dark",
+      });
+    }
+  };
+
+  console.log(form.namapemilik);
 
   const handleSubmit = useMutation(async (e) => {
     try {
       e.preventDefault();
       form.warna = value;
       form.tahunpembuatan = startDate?.getFullYear();
-      await API.post("/vehicles", form);
-      Navigate("/");
+      await API.put("/vehicles", form);
+      const setTimer = new Promise((resolve) => setTimeout(resolve, 1500));
+      toast.promise(setTimer, {
+        pending: "Sending Data",
+        success: "Data Has Been Send 👌",
+        error: "Data Don't Send🤯",
+      });
+      setTimeout(function () {
+        Navigate("/");
+      }, 4000);
     } catch (e) {
       console.error(e);
+      notify();
     }
 
     // try {
@@ -101,8 +125,10 @@ function Update() {
     getUpdate();
   }, []);
 
+  console.log(message);
   return (
     <div className="container-fluid">
+      <ToastContainer />
       <div className="row ">
         <div className="col d-flex align-items-center">
           <FcFolder style={{ fontSize: "60px" }} />
@@ -135,6 +161,12 @@ function Update() {
                   name="nomorregkendaraan"
                   onChange={handleChange}
                   required
+                  disabled
+                  style={{
+                    cursor: "not-allowed",
+                    background: "grey",
+                    color: "white",
+                  }}
                 />
               </Form.Group>
               <Form.Group className="mb-3">

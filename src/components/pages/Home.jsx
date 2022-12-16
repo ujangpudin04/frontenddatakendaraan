@@ -9,6 +9,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import DeleteData from "../modal/DeleteData";
 
+// notifikasi
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function Home() {
   // const [modalShow, setModalShow] = useState(false);
   const Navigate = useNavigate();
@@ -17,7 +21,10 @@ function Home() {
 
   // const [message, setMessage] = useState();
 
-  const [form, setForm] = useState();
+  const [form, setForm] = useState({
+    searchByNoReg: "",
+    searchKey: "",
+  });
 
   const [idDelete, setIdDelete] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
@@ -42,7 +49,7 @@ function Home() {
 
   const dataTemp = { ...data };
   const dataSearch = dataTemp[0];
-  // console.log(dataSearch);
+  // console.log(dataTemp);
   // console.log(dataSearch[0]?.namapemilik);
   const handleSubmit = useMutation(async (e) => {
     try {
@@ -56,16 +63,44 @@ function Home() {
       const body = form;
       const response = await API.post("/vehicles/search", body, config);
 
-      if (response.status === 200) {
-        setData({ ...response.data });
+      if (form.searchByNoReg.length >= 1) {
+        if (response.status === 200 && response.data.length >= 1) {
+          console.log(response.data);
+          toast.success("Data Di Temukan", {
+            position: toast.POSITION.TOP_RIGHT,
+            theme: "dark",
+          });
+          return setData(response.data);
+        } else {
+          console.log(response.data);
+          toast.error("Data Di Temukan", {
+            position: toast.POSITION.TOP_RIGHT,
+            theme: "dark",
+          });
+        }
+      } else if (form.searchKey.length >= 1) {
+        if (response.status === 200 && response.data.length >= 1) {
+          console.log(response.data);
+          toast.success("Data Di Temukan", {
+            position: toast.POSITION.TOP_RIGHT,
+            theme: "dark",
+          });
+          return setData(response.data);
+        } else {
+          console.log(response.data);
+          toast.error("Data Di Temukan", {
+            position: toast.POSITION.TOP_RIGHT,
+            theme: "dark",
+          });
+        }
+      } else {
+        toast.error("Data Di Temukan", {
+          position: toast.POSITION.TOP_RIGHT,
+          theme: "dark",
+        });
       }
-      // console.log(response);
     } catch (error) {
-      <h1>{error.response.data.data}</h1>;
-      // <Alert variant="danger" className="py-1 mb-3">
-      // {error.response.data.data}
-      // </Alert>
-      // setMessage(alert);
+      console.log(error);
     }
   });
 
@@ -80,7 +115,7 @@ function Home() {
     try {
       await API.delete(`/vehicles/${id}`);
       refetch();
-      await setForm(null);
+      setForm(null);
     } catch (error) {
       console.log(error);
     }
@@ -94,16 +129,11 @@ function Home() {
     }
   }, [confirmDelete]);
 
-  useEffect(() => {
-    setData();
-  }, []);
-
-  useEffect(() => {
-    setData();
-  }, [vehiclesList]);
+  // console.log(data);
 
   return (
     <div className="container-fluid">
+      <ToastContainer />
       <div className="row ">
         <div className="col d-flex align-items-center">
           <FcFolder style={{ fontSize: "60px" }} />
@@ -127,7 +157,6 @@ function Home() {
                 placeholder="Input Cari No.Registrasi Kendaraan"
                 name="searchByNoReg"
                 onChange={handleChange}
-                required
               />
             </Form.Group>
             <Form.Group className="mb-3 col-md-4">
@@ -139,7 +168,6 @@ function Home() {
                 placeholder="Input Cari Nama Pemilik"
                 name="searchKey"
                 onChange={handleChange}
-                required
               />
             </Form.Group>
             <div className="col mb-3 ">
@@ -196,8 +224,6 @@ function Home() {
               <tbody>
                 {data == null || "" ? (
                   vehiclesList?.map((item, id) => {
-                    // console.log(item);
-                    // const idx = data.id;
                     return (
                       <tr key={id}>
                         <td>{(id += 1)}</td>
@@ -257,16 +283,77 @@ function Home() {
                       </tr>
                     );
                   })
-                ) : (
+                ) : data.length > 1 ? (
+                  data?.map((item, id) => {
+                    return (
+                      <tr key={id}>
+                        <td>{(id += 1)}</td>
+                        <td>{item?.nomorregkendaraan}</td>
+                        <td>{item?.namapemilik}</td>
+                        <td>{item?.merkkendaraan}</td>
+                        <td>{item?.tahunpembuatan}</td>
+                        <td>{item?.kapasitassilinder} CC</td>
+                        <td>{item?.warna}</td>
+                        <td>{item?.bahanbakar}</td>
+
+                        <td className="fw-bold ">
+                          <span
+                            className="btn btn-success badge rounded-pill"
+                            style={{ marginRight: "1rem" }}
+                          >
+                            <Link
+                              to={"/detail/" + item.id}
+                              key={id}
+                              style={{
+                                textDecoration: "none",
+                                color: "white",
+                              }}
+                            >
+                              <FcInfo style={{ fontSize: "20px" }} />
+                              Detail
+                            </Link>
+                          </span>
+                          <Link
+                            to={"/update/" + item.id}
+                            key={id}
+                            style={{ textDecoration: "none", color: "white" }}
+                          >
+                            <span
+                              style={{ color: "blue", marginRight: "1rem" }}
+                            >
+                              <FcEditImage style={{ fontSize: "20px" }} />
+                              Edit
+                            </span>
+                          </Link>
+
+                          <Button
+                            style={{
+                              color: "red",
+                              background: "none",
+                              border: "none",
+                              fontWeight: "bold",
+                            }}
+                            onClick={() => {
+                              handleDelete(item.id);
+                            }}
+                          >
+                            <FcEmptyTrash style={{ fontSize: "20px" }} />
+                            Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : data.length === 1 ? (
                   <tr>
-                    <td>{dataSearch?.id}</td>
-                    <td>{dataSearch?.nomorregkendaraan}</td>
-                    <td>{dataSearch.namapemilik}</td>
-                    <td>{dataSearch?.merkkendaraan}</td>
-                    <td>{dataSearch?.tahunpembuatan}</td>
-                    <td>{dataSearch?.kapasitassilinder} CC</td>
-                    <td>{dataSearch?.warna}</td>
-                    <td>{dataSearch?.bahanbakar}</td>
+                    <td>{data[0]?.id}</td>
+                    <td>{data[0]?.nomorregkendaraan}</td>
+                    <td>{data[0]?.namapemilik}</td>
+                    <td>{data[0]?.merkkendaraan}</td>
+                    <td>{data[0]?.tahunpembuatan}</td>
+                    <td>{data[0]?.kapasitassilinder} CC</td>
+                    <td>{data[0]?.warna}</td>
+                    <td>{data[0]?.bahanbakar}</td>
 
                     <td className="fw-bold ">
                       <span
@@ -274,7 +361,8 @@ function Home() {
                         style={{ marginRight: "1rem" }}
                       >
                         <Link
-                          to={"/detail/" + dataSearch.id}
+                          to={"/detail/" + data[0].id}
+                          // key={id}
                           style={{
                             textDecoration: "none",
                             color: "white",
@@ -285,7 +373,8 @@ function Home() {
                         </Link>
                       </span>
                       <Link
-                        to={"/update/" + dataSearch.id}
+                        to={"/update/" + data[0].id}
+                        // key={id}
                         style={{ textDecoration: "none", color: "white" }}
                       >
                         <span style={{ color: "blue", marginRight: "1rem" }}>
@@ -302,7 +391,7 @@ function Home() {
                           fontWeight: "bold",
                         }}
                         onClick={() => {
-                          handleDelete(dataSearch?.id);
+                          handleDelete(data[0].id);
                         }}
                       >
                         <FcEmptyTrash style={{ fontSize: "20px" }} />
@@ -310,6 +399,8 @@ function Home() {
                       </Button>
                     </td>
                   </tr>
+                ) : (
+                  <h1>Data Tidak Ditemukan</h1>
                 )}
               </tbody>
             </Table>

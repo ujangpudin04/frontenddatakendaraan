@@ -9,6 +9,10 @@ import { API } from "../../config/api";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
+// notifikasi
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // year
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -18,6 +22,7 @@ function Create() {
 
   // getYear
   const [startDate, setStartDate] = useState(null);
+  const [message, setMessage] = useState("");
 
   // handle dropdown
   const getInitialState = () => {
@@ -42,9 +47,6 @@ function Create() {
     bahanbakar: "",
   });
 
-  // console.log(form);
-  // console.log(value);
-
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -52,20 +54,65 @@ function Create() {
     });
   };
 
+  const notify = () => {
+    // const messageError = message;
+    if (form.nomorregkendaraan === "" || null) {
+      // eslint-disable-next-line array-callback-return
+      toast.error("Nomor Registrasi Kendaraan Tidak Boleh Kosong", {
+        position: toast.POSITION.TOP_RIGHT,
+        theme: "dark",
+      });
+    } else {
+      toast.error(
+        "Nomor Registrasi Kendaraan Tidak Boleh Sama Dengan Yang Lain",
+        {
+          position: toast.POSITION.TOP_RIGHT,
+          theme: "dark",
+        }
+      );
+    }
+    if (form.namapemilik === "" || null) {
+      toast.error("Nama Pemilik Tidak Boleh Kosong", {
+        position: toast.POSITION.TOP_RIGHT,
+        theme: "dark",
+      });
+    }
+  };
+
   const handleSubmit = useMutation(async (e) => {
     try {
       e.preventDefault();
       form.warna = value;
       form.tahunpembuatan = startDate?.getFullYear();
-      await API.post("/vehicles", form);
-      Navigate("/");
+      let today = Date.now();
+      if (form.tahunpembuatan > today) {
+        throw e;
+      }
+      const body = form;
+      await API.post("/vehicles", body);
+      // Navigate("/");
+      const setTimer = new Promise((resolve) => setTimeout(resolve, 1500));
+      toast.promise(setTimer, {
+        pending: "Sending Data",
+        success: "Data Has Been Send 👌",
+        error: "Data Don't Send🤯",
+      });
+      setTimeout(function () {
+        Navigate("/");
+      }, 3000);
     } catch (e) {
-      console.error(e);
+      const error = e.response.data.message;
+      setMessage(error);
+      notify();
+      console.log(e);
     }
   });
 
+  // console.log(message);
+
   return (
     <div className="container-fluid">
+      <ToastContainer />
       <div className="row ">
         <div className="col d-flex align-items-center">
           <FcFolder style={{ fontSize: "60px" }} />
@@ -82,6 +129,7 @@ function Create() {
           }}
         >
           <h5 className="mb-3">Tambah Data Kendaraan</h5>
+
           <Form
             className="d-flex gap-5"
             onSubmit={(e) => handleSubmit.mutate(e)}
@@ -179,7 +227,7 @@ function Create() {
                   <select
                     value={value}
                     onChange={handleColor}
-                    class="form-select"
+                    className="form-select"
                     aria-label="Default select example"
                   >
                     <option value="" selected disabled>
@@ -223,7 +271,7 @@ function Create() {
                   textAlign: "center",
                 }}
                 type="submit"
-                onClick={(e) => handleSubmit.mutate(e)}
+                onClick={(notify, (e) => handleSubmit.mutate(e))}
               >
                 Simpan
               </Button>
@@ -247,12 +295,8 @@ function Create() {
           </div>
         </div>
       </div>
-
-      {/* Button */}
     </div>
   );
 }
-
-//handling year
 
 export default Create;

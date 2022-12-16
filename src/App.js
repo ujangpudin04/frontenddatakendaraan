@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./components/pages/Home";
 import Update from "./components/pages/Update";
 import Create from "./components/pages/Create";
+import Create2 from "./components/pages/Create2";
 import Detail from "./components/pages/Detail";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" exact element={<Home />} />
         <Route path="/detail/:id" exact element={<Detail />} />
         <Route path="/create" exact element={<Create />} />
+        <Route path="/coba" exact element={<Create2 />} />
         <Route path="/update/:id" exact element={<Update />} />
       </Routes>
     </>
